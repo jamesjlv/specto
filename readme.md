@@ -70,7 +70,7 @@ Before running the app, ensure your machine is properly configured for React Nat
 
 Ensure you have:
 
-- **Node.js**: `v18.x` or `v20.x` (LTS)
+- **Node.js**: `v22.x`+ (LTS)
 - **Git**
 - **Android Studio** (for Android emulator / SDK tools) or **Xcode** (for macOS iOS Simulator)
 
