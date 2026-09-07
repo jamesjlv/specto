@@ -1,11 +1,11 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import { QueryClientProvider } from "@tanstack/react-query";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import * as SplashScreen from "expo-splash-screen";
 import { useFonts } from "expo-font";
-import { queryClient } from "@/main";
+import { clientPersister, queryClient } from "@/main";
+import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client";
 import "../../global.css";
 
 SplashScreen.preventAutoHideAsync();
@@ -30,7 +30,7 @@ export default function RootLayout() {
   }
 
   return (
-    <QueryClientProvider client={queryClient}>
+    <PersistQueryClientProvider client={queryClient} persistOptions={{ persister: clientPersister }}>
       <SafeAreaProvider>
         <StatusBar style="light" />
         <Stack screenOptions={{ headerShown: false, animation: "fade", contentStyle: { backgroundColor: "#02141b" } }}>
@@ -45,6 +45,6 @@ export default function RootLayout() {
           />
         </Stack>
       </SafeAreaProvider>
-    </QueryClientProvider>
+    </PersistQueryClientProvider>
   );
 }

@@ -1770,6 +1770,21 @@
   dependencies:
     "@tanstack/query-core" "5.102.8"
 
+"@tanstack/query-sync-storage-persister@^5.102.8":
+  version "5.102.8"
+  resolved "https://registry.yarnpkg.com/@tanstack/query-sync-storage-persister/-/query-sync-storage-persister-5.102.8.tgz#ef37ba17f1d73a5a75a63ef92a8f35e4fdc2489d"
+  integrity sha512-UvIpYl6jipKJHfITAieQaXMvVPoJh2IkQkWDYZNRPycoGbNYdqB+UdRVoXkZagB3EdeKnlC7sA61grsEC87Wfw==
+  dependencies:
+    "@tanstack/query-core" "5.102.8"
+    "@tanstack/query-persist-client-core" "5.102.8"
+
+"@tanstack/react-query-persist-client@^5.102.8":
+  version "5.102.8"
+  resolved "https://registry.yarnpkg.com/@tanstack/react-query-persist-client/-/react-query-persist-client-5.102.8.tgz#4e77712da521879ecbefc5c3e05e0474dfe43efa"
+  integrity sha512-WOZReC+m9klekPtG7eeZ3txJeMA9lg2R0RytSG3yXcZgJItQAVIyoobJdbdIQtlpgcU2tSzsOEBtJacs2vlCOA==
+  dependencies:
+    "@tanstack/query-persist-client-core" "5.102.8"
+
 "@tanstack/react-query@^5.102.8":
   version "5.102.8"
   resolved "https://registry.yarnpkg.com/@tanstack/react-query/-/react-query-5.102.8.tgz#bdc5c24485258e6ae2e7ecac0a4cf58c59937839"
