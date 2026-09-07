@@ -1,7 +1,7 @@
 # Specto — Mobile Engineering Presentation & Architecture Guide
 
 > **Live Figma Specification**: [Specto App Design System & Screens](https://www.figma.com/design/CE4wTzrn2qTsYIOXNQtKaJ/Specto-App?node-id=0-1&m=dev)  
-> **AI Pairing Session Transcript**: [Gemini Technical Pairing Session](https://gemini.google.com/share/your-chat-link-here) _(replace with your public share link)_
+> **AI Pairing Session Transcript**: [Gemini Technical Pairing Session](https://share.gemini.google/6gLQRo27Cfwv)
 
 ---
 
