@@ -4,7 +4,7 @@ import { HttpClient, HttpMethod, HttpRequest, HttpResponse, HttpStatusCode } fro
 export class AxiosHttpClient implements HttpClient {
   private readonly timeoutMs: number;
 
-  constructor(timeoutMs: number = 10000) {
+  constructor(timeoutMs: number = 12000) {
     this.timeoutMs = timeoutMs;
   }
 
@@ -17,23 +17,23 @@ export class AxiosHttpClient implements HttpClient {
         method: config.method ?? HttpMethod.Get,
         data: config.body,
         params: config.params,
-        headers: config.headers,
+        headers: {
+          Accept: "application/json",
+          "User-Agent": "SpectoMobileApp/1.0",
+          ...config.headers,
+        },
         timeout: this.timeoutMs,
-        validateStatus: () => true,
+        validateStatus: () => true, // Allows 4xx and 5xx to be handled by the Data Layer
       });
     } catch (rawError) {
       const error = rawError as AxiosError;
+      console.error(`[AxiosHttpClient Error] ${config.method ?? "GET"} ${config.url}:`, error.message);
 
-      // Handle offline or client-side timeout drops
-      if (error.code === "ECONNABORTED" || !error.response) {
-        return {
-          statusCode: HttpStatusCode.ServiceUnavailable,
-          data: null as unknown as TResponse,
-          headers: {},
-        };
-      }
-
-      axiosResponse = error.response as AxiosResponse<TResponse>;
+      return {
+        statusCode: HttpStatusCode.ServiceUnavailable,
+        data: null as unknown as TResponse,
+        headers: {},
+      };
     }
 
     const rateLimitHeader = axiosResponse.headers?.["x-ratelimit-remaining"];
@@ -42,7 +42,7 @@ export class AxiosHttpClient implements HttpClient {
     return {
       statusCode: axiosResponse.status as HttpStatusCode,
       data: axiosResponse.data,
-      headers: axiosResponse.headers as Record<string, string>,
+      headers: (axiosResponse.headers ?? {}) as Record<string, string>,
       rateLimitRemaining,
     };
   }
