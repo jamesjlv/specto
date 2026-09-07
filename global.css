@@ -1,0 +1,72 @@
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/preflight.css" layer(base);
+@import "tailwindcss/utilities.css";
+
+@import "nativewind/theme";
+
+@theme {
+  --color-background: #02141b;
+  --color-foreground: #f5f7f8;
+
+  --color-primary: #8b8cff;
+  --color-primary-foreground: #ffffff;
+
+  --color-secondary: #16313a;
+  --color-secondary-foreground: #e5eef1;
+
+  --color-muted: #10272f;
+  --color-muted-foreground: #8da1a8;
+
+  --color-card: #09232c;
+  --color-card-foreground: #f5f7f8;
+
+  --color-border: #1b3942;
+
+  --color-destructive: #ef4444;
+
+  /* Brand Accent Tokens */
+  --color-accent: #f5b83d;
+  --color-accent-foreground: #02141b;
+
+  /* ─────────────────────────────────────────────
+     GEIST FONT FAMILY TOKENS
+  ───────────────────────────────────────────── */
+  --font-geist-light: Geist-Light;
+  --font-geist: Geist-Regular;
+  --font-geist-medium: Geist-Medium;
+  --font-geist-semibold: Geist-SemiBold;
+  --font-geist-bold: Geist-Bold;
+
+  /* ─────────────────────────────────────────────
+     TYPOGRAPHY SCALE (Size / Line Height)
+  ───────────────────────────────────────────── */
+  --text-xs: 12px;
+  --text-xs--line-height: 16px;
+
+  --text-sm: 14px;
+  --text-sm--line-height: 20px;
+
+  --text-base: 16px;
+  --text-base--line-height: 24px;
+
+  --text-lg: 18px;
+  --text-lg--line-height: 28px;
+
+  --text-xl: 20px;
+  --text-xl--line-height: 28px;
+
+  --text-2xl: 24px;
+  --text-2xl--line-height: 32px;
+
+  --text-3xl: 30px;
+  --text-3xl--line-height: 36px;
+
+  --text-4xl: 36px;
+  --text-4xl--line-height: 40px;
+
+  --text-5xl: 48px;
+  --text-5xl--line-height: 52px;
+
+  --text-6xl: 60px;
+  --text-6xl--line-height: 64px;
+}
