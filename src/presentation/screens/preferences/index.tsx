@@ -2,7 +2,7 @@ import { GenreCard } from "@/presentation/components";
 import { ScreenHeader } from "@/presentation/components/ui/screen-header";
 import { useInfiniteShows } from "@/presentation/hooks/use-infinite-shows";
 import { useOnboardingStore } from "@/presentation/store";
-import React, { useMemo } from "react";
+import { useMemo } from "react";
 import { View, Text, ScrollView, Pressable } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 

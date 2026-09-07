@@ -13,26 +13,32 @@ const mmkvStorage: StateStorage = {
 
 interface FavoritesState {
   favorites: Record<number, IShow>;
-  toggleFavorite: (show: IShow) => void;
-  isFavorite: (showId: number) => boolean;
+  toggleFavorite: (show?: IShow | null) => void;
+  isFavorite: (showId?: number | null) => boolean;
 }
 
 export const useFavoritesStore = create<FavoritesState>()(
   persist(
     (set, get) => ({
       favorites: {},
-      toggleFavorite: (show: IShow) => {
+      toggleFavorite: (show?: IShow | null) => {
+        if (!show?.id) return;
+        const targetId = Number(show.id);
+
         set((state) => {
           const next = { ...state.favorites };
-          if (next[show.id]) {
-            delete next[show.id];
+          if (next[targetId]) {
+            delete next[targetId];
           } else {
-            next[show.id] = show;
+            next[targetId] = show;
           }
           return { favorites: next };
         });
       },
-      isFavorite: (showId: number) => Boolean(get().favorites[showId]),
+      isFavorite: (showId?: number | null) => {
+        if (!showId) return false;
+        return Boolean(get().favorites[Number(showId)]);
+      },
     }),
     {
       name: "specto-favorites",

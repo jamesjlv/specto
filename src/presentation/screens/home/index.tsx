@@ -8,8 +8,53 @@ import { useFavoritesStore } from "@/presentation/store";
 import { ShowCompactCard, SvgIcon } from "@/presentation/components";
 import { Skeleton } from "@/presentation/components/ui";
 import { StateFeedback } from "@/presentation/components/ui/state-feedback";
+import { IShow } from "@/domain/models";
 
 const BG_COLOR = "#02141B";
+
+function FeaturedFavoriteButton({ show }: { show?: IShow | null }) {
+  const isFavorite = useFavoritesStore((state) => (show?.id ? Boolean(state.favorites[Number(show.id)]) : false));
+  const toggleFavorite = useFavoritesStore((state) => state.toggleFavorite);
+
+  return (
+    <Pressable
+      onPress={() => {
+        if (show?.id) {
+          toggleFavorite(show);
+        }
+      }}
+      hitSlop={8}
+      style={{
+        width: "45%",
+        height: 43,
+        borderRadius: 10,
+        backgroundColor: isFavorite ? "rgba(250, 197, 84, 0.15)" : "rgba(11, 32, 39, 0.85)",
+        borderWidth: 1,
+        borderColor: isFavorite ? "#FAC554" : "rgba(253, 253, 252, 0.20)",
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "center",
+      }}
+      className="active:opacity-80"
+    >
+      <SvgIcon
+        name={isFavorite ? "check" : "plus"}
+        size={16}
+        color={isFavorite ? "#FAC554" : "#FDFDFC"}
+        style={{ marginRight: 8 }}
+      />
+      <Text
+        style={{
+          color: isFavorite ? "#FAC554" : "#FDFDFC",
+          fontFamily: "Geist-SemiBold",
+          fontSize: 14,
+        }}
+      >
+        {isFavorite ? "In My List" : "My List"}
+      </Text>
+    </Pressable>
+  );
+}
 
 interface HomeScreenProps {
   onSelectShow: (showId: number) => void;
@@ -195,37 +240,7 @@ export function HomeScreen({ onSelectShow, onSeeAllTrending, onSeeAllUpcoming }:
               Play
             </Text>
           </Pressable>
-          <Pressable
-            onPress={() => toggleFavorite(featuredShow)}
-            style={{
-              width: "45%",
-              height: 43,
-              borderRadius: 10,
-              backgroundColor: isFeaturedFavorite ? "rgba(250, 197, 84, 0.15)" : "rgba(11, 32, 39, 0.85)",
-              borderWidth: 1,
-              borderColor: isFeaturedFavorite ? "#FAC554" : "rgba(253, 253, 252, 0.20)",
-              flexDirection: "row",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-            className="active:opacity-85"
-          >
-            <SvgIcon
-              name={isFeaturedFavorite ? "check" : "plus"}
-              size={16}
-              color={isFeaturedFavorite ? "#FAC554" : "#FDFDFC"}
-              style={{ marginRight: 8 }}
-            />
-            <Text
-              style={{
-                color: isFeaturedFavorite ? "#FAC554" : "#FDFDFC",
-                fontFamily: "Geist-SemiBold",
-                fontSize: 14,
-              }}
-            >
-              {isFeaturedFavorite ? "In My List" : "My List"}
-            </Text>
-          </Pressable>
+          <FeaturedFavoriteButton show={featuredShow} />
         </View>
       </View>
 
