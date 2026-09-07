@@ -1,4 +1,3 @@
-import React from "react";
 import { Tabs } from "expo-router";
 import { CustomTabBar } from "@/presentation/components/ui/custom-tab-bar";
 
@@ -11,9 +10,27 @@ export default function TabsLayout() {
       }}
     >
       <Tabs.Screen name="index" options={{ title: "Home" }} />
-      <Tabs.Screen name="discover" options={{ title: "Discover" }} />
-      <Tabs.Screen name="search" options={{ title: "Search" }} />
-      <Tabs.Screen name="favorites" options={{ title: "Favorites" }} />
+      <Tabs.Screen
+        name="discover"
+        options={{
+          title: "Discover",
+          tabBarStyle: { display: "none" },
+        }}
+      />
+      <Tabs.Screen
+        name="search"
+        options={{
+          title: "Search",
+          tabBarStyle: { display: "none" },
+        }}
+      />
+      <Tabs.Screen
+        name="favorites"
+        options={{
+          title: "Favorites",
+          tabBarStyle: { display: "none" },
+        }}
+      />
     </Tabs>
   );
 }

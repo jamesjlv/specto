@@ -7,3 +7,4 @@ export * from "./show/info/remote-get-show-info.service";
 export * from "./show/crew/remote-get-show-crew.service";
 export * from "./show/cast/remote-get-show-cast.service";
 export * from "./people/search/remote-search-people.service";
+export * from "./show/get/remote-get-shows.service";

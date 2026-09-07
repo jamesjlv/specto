@@ -6,3 +6,4 @@ export * from "./images/remote-get-images";
 export * from "./schedule/remote-get-schedule";
 export * from "./search/remote-search-shows";
 export * from "./seasons/remote-get-season";
+export * from "./get/remote-get-shows";
