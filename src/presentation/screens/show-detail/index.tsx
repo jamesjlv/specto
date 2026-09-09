@@ -202,13 +202,15 @@ export function ShowDetailScreen({ showId, onBack }: ShowDetailScreenProps) {
           </Text>
           {ratingText && (
             <View className="flex-row items-center">
+              <Text className="font-geist-medium text-xs leading-4 tracking-[-0.02px]  text-white/80"> - </Text>
+
               <SvgIcon
                 name="star"
                 size={13}
                 color="#FAC554"
                 style={{
                   marginRight: 4,
-                  marginTop: -2,
+                  marginTop: -4,
                 }}
               />
 
