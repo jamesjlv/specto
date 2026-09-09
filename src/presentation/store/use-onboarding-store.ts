@@ -5,14 +5,15 @@ import { createMMKV } from "react-native-mmkv";
 const storage = createMMKV({ id: "specto-onboarding-storage" });
 
 const mmkvStorage: StateStorage = {
-  setItem: (name: string, value: string) => storage.set(name, value),
-  getItem: (name: string) => storage.getString(name) ?? null,
-  removeItem: (name: string) => storage.remove(name),
+  setItem: (name, value) => storage.set(name, value),
+  getItem: (name) => storage.getString(name) ?? null,
+  removeItem: (name) => storage.remove(name),
 };
 
 interface OnboardingState {
   selectedGenres: string[];
   isCompleted: boolean;
+  setSelectedGenres: (genres: string[]) => void;
   toggleGenre: (genre: string) => void;
   completeOnboarding: () => void;
   resetOnboarding: () => void;
@@ -21,9 +22,13 @@ interface OnboardingState {
 export const useOnboardingStore = create<OnboardingState>()(
   persist(
     (set, get) => ({
-      selectedGenres: ["Action", "Sci-Fi"],
+      selectedGenres: [],
       isCompleted: false,
-      toggleGenre: (genre: string) => {
+      setSelectedGenres: (genres) =>
+        set({
+          selectedGenres: [...new Set(genres)],
+        }),
+      toggleGenre: (genre) => {
         const current = get().selectedGenres;
         const exists = current.includes(genre);
         set({
@@ -31,7 +36,11 @@ export const useOnboardingStore = create<OnboardingState>()(
         });
       },
       completeOnboarding: () => set({ isCompleted: true }),
-      resetOnboarding: () => set({ isCompleted: false, selectedGenres: [] }),
+      resetOnboarding: () =>
+        set({
+          isCompleted: false,
+          selectedGenres: [],
+        }),
     }),
     {
       name: "specto-onboarding",

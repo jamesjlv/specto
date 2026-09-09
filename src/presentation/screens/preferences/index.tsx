@@ -1,7 +1,8 @@
-import { GenreCard } from "@/presentation/components";
+import { AppButton, GenreCard } from "@/presentation/components";
 import { ScreenHeader } from "@/presentation/components/ui/screen-header";
 import { useInfiniteShows } from "@/presentation/hooks/use-infinite-shows";
 import { useOnboardingStore } from "@/presentation/store";
+
 import { useMemo } from "react";
 import { View, Text, ScrollView, Pressable } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -29,15 +30,23 @@ interface OnboardGenresScreenProps {
 
 export function OnboardGenresScreen({ onContinue, onSkip, onBack }: OnboardGenresScreenProps) {
   const insets = useSafeAreaInsets();
+
   const selectedGenres = useOnboardingStore((state) => state.selectedGenres);
+
   const toggleGenre = useOnboardingStore((state) => state.toggleGenre);
+
+  const setSelectedGenres = useOnboardingStore((state) => state.setSelectedGenres);
+
   const completeOnboarding = useOnboardingStore((state) => state.completeOnboarding);
 
   const { data } = useInfiniteShows();
 
   const genreImages = useMemo(() => {
     const map: Record<string, string> = {};
-    if (!data?.pages) return map;
+
+    if (!data?.pages) {
+      return map;
+    }
 
     const allShows = data.pages.flat();
 
@@ -50,6 +59,7 @@ export function OnboardGenresScreen({ onContinue, onSkip, onBack }: OnboardGenre
 
       if (match) {
         const raw = match.image?.medium ?? match.image?.original;
+
         if (raw) {
           map[genre] = raw.replace("http://", "https://");
         }
@@ -60,15 +70,28 @@ export function OnboardGenresScreen({ onContinue, onSkip, onBack }: OnboardGenre
   }, [data?.pages]);
 
   const handleFinish = () => {
+    setSelectedGenres(selectedGenres);
     completeOnboarding();
+    onContinue();
+  };
+
+  const handleSkip = () => {
+    setSelectedGenres([]);
+    completeOnboarding();
+    if (onSkip) {
+      onSkip();
+      return;
+    }
     onContinue();
   };
 
   const genrePairs = useMemo(() => {
     const pairs: [string, string?][] = [];
+
     for (let i = 0; i < GENRES_LIST.length; i += 2) {
       pairs.push([GENRES_LIST[i], GENRES_LIST[i + 1]]);
     }
+
     return pairs;
   }, []);
 
@@ -99,6 +122,7 @@ export function OnboardGenresScreen({ onContinue, onSkip, onBack }: OnboardGenre
               isActive={selectedGenres.includes(left)}
               onPress={() => toggleGenre(left)}
             />
+
             {right ? (
               <GenreCard
                 name={right}
@@ -117,28 +141,11 @@ export function OnboardGenresScreen({ onContinue, onSkip, onBack }: OnboardGenre
         className="absolute bottom-0 left-0 right-0 px-5"
         style={{ paddingBottom: Math.max(insets.bottom, 16) + 12 }}
       >
-        <Pressable
-          onPress={hasSelection ? handleFinish : (onSkip ?? handleFinish)}
-          style={{
-            height: 48,
-            width: "100%",
-            borderRadius: 24,
-            backgroundColor: "#FAC554",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-          className="active:opacity-85"
-        >
-          <Text
-            style={{
-              color: "#02141B",
-              fontFamily: "Geist-SemiBold",
-              fontSize: 16,
-            }}
-          >
-            {hasSelection ? "Continue" : "Skip"}
-          </Text>
-        </Pressable>
+        <AppButton
+          title={hasSelection ? "Continue" : "Skip"}
+          onPress={hasSelection ? handleFinish : handleSkip}
+          className="w-full"
+        />
       </View>
     </View>
   );

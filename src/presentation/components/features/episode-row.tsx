@@ -31,7 +31,7 @@ export const EpisodeRow = React.memo(function EpisodeRow({ episode, onPress }: E
             />
           ) : (
             <View className="size-full items-center justify-center">
-              <SvgIcon name="play" size={16} color="#8DA1A8" />
+              <SvgIcon name="video-recorder" size={16} color="#8DA1A8" />
             </View>
           )}
         </View>

@@ -60,7 +60,7 @@ export const ShowPosterCard = React.memo(function ShowPosterCard({ show, onPress
 
         {rating && (
           <View className="rounded border border-white/20 bg-white/10 px-1.5 py-0.5">
-            <Text className="font-geist text-[9px] leading-3 text-white/90">{rating}</Text>
+            <Text className="font-geist text-[9px] text-white/90">{rating}</Text>
           </View>
         )}
       </View>

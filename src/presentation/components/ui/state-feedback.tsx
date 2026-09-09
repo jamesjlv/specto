@@ -22,8 +22,8 @@ export function StateFeedback({ icon = "search", title, description, actionTitle
       <Text className="mt-2 text-center font-geist text-xs leading-4 text-[#7D8790]">{description}</Text>
 
       {actionTitle && onAction && (
-        <View className="mt-2 w-36">
-          <AppButton title={actionTitle} onPress={onAction} variant="secondary" className="h-10" />
+        <View className="mt-4 w-60">
+          <AppButton title={actionTitle} onPress={onAction} variant="secondary" className="h-10" icon="search" />
         </View>
       )}
     </View>

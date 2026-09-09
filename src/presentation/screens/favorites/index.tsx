@@ -33,10 +33,10 @@ export function FavoritesScreen({ onSelectShow, onExplore, onBack }: FavoritesSc
         onStatusChange={setActiveStatus}
       />
 
-      {Object.keys(favoritesMap).length === 0 ? (
+      {Object.keys(favoritesMap).length === 0 || filteredFavorites.length === 0 ? (
         <StateFeedback
           icon="bookmark"
-          title="Your List is Empty"
+          title={activeStatus ? "No shows found for the selected status" : "Your List is Empty"}
           description="Save series and movies to your personal list to watch them later."
           actionTitle="Explore Shows"
           onAction={onExplore}

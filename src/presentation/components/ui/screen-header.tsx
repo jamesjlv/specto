@@ -37,7 +37,7 @@ export function ScreenHeader({
   };
 
   return (
-    <View style={{ paddingTop: insets.top + 12 }} className="z-30 pb-2">
+    <View style={{ paddingTop: insets.top + 12 }} className="z-30 pb-2 mb-4">
       <View className="flex-row items-center justify-between pl-[10px] pr-4">
         <View className="flex-1 flex-row items-center">
           <Pressable onPress={handleBack} hitSlop={12} className="items-center justify-center active:opacity-70">
@@ -85,11 +85,7 @@ export function ScreenHeader({
                   isSelected ? "bg-accent" : "border border-white/15 bg-card"
                 }`}
               >
-                <Text
-                  className={`font-geist-medium text-[11px] leading-4 ${
-                    isSelected ? "text-[#02141B]" : "text-[#FDFDFC]"
-                  }`}
-                >
+                <Text className={`font-geist-medium text-[11px]  ${isSelected ? "text-[#02141B]" : "text-[#FDFDFC]"}`}>
                   {status === "ALL" ? "All" : status}
                 </Text>
               </Pressable>

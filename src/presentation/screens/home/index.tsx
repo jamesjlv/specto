@@ -1,19 +1,21 @@
 import { useMemo } from "react";
-import { View, Text, ScrollView, Pressable, StyleSheet, useWindowDimensions } from "react-native";
+import { View, Text, ScrollView, Pressable, StyleSheet } from "react-native";
 import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useScheduleShows } from "@/presentation/hooks/use-schedule-shows";
-import { useFavoritesStore } from "@/presentation/store";
+import { useFavoritesStore, useOnboardingStore } from "@/presentation/store";
 import { ShowCompactCard, SvgIcon } from "@/presentation/components";
 import { Skeleton } from "@/presentation/components/ui";
 import { StateFeedback } from "@/presentation/components/ui/state-feedback";
 import { IShow } from "@/domain/models";
+import { shuffle } from "@/presentation/helpers/array";
 
+// Used in gradient for now.
 const BG_COLOR = "#02141B";
 
 function FeaturedFavoriteButton({ show }: { show?: IShow | null }) {
   const isFavorite = useFavoritesStore((state) => (show?.id ? Boolean(state.favorites[Number(show.id)]) : false));
+
   const toggleFavorite = useFavoritesStore((state) => state.toggleFavorite);
 
   return (
@@ -24,18 +26,11 @@ function FeaturedFavoriteButton({ show }: { show?: IShow | null }) {
         }
       }}
       hitSlop={8}
-      style={{
-        width: "45%",
-        height: 43,
-        borderRadius: 10,
-        backgroundColor: isFavorite ? "rgba(250, 197, 84, 0.15)" : "rgba(11, 32, 39, 0.85)",
-        borderWidth: 1,
-        borderColor: isFavorite ? "#FAC554" : "rgba(253, 253, 252, 0.20)",
-        flexDirection: "row",
-        alignItems: "center",
-        justifyContent: "center",
-      }}
-      className="active:opacity-80"
+      className={`h-[43px] w-[45%] flex-row items-center justify-center rounded-[10px] border ${
+        isFavorite
+          ? "border-[#FAC554] bg-[rgba(250,197,84,0.15)]"
+          : "border-[rgba(253,253,252,0.20)] bg-[rgba(11,32,39,0.85)]"
+      } active:opacity-80`}
     >
       <SvgIcon
         name={isFavorite ? "check" : "plus"}
@@ -43,13 +38,8 @@ function FeaturedFavoriteButton({ show }: { show?: IShow | null }) {
         color={isFavorite ? "#FAC554" : "#FDFDFC"}
         style={{ marginRight: 8 }}
       />
-      <Text
-        style={{
-          color: isFavorite ? "#FAC554" : "#FDFDFC",
-          fontFamily: "Geist-SemiBold",
-          fontSize: 14,
-        }}
-      >
+
+      <Text className={`font-[Geist-SemiBold] text-[14px] ${isFavorite ? "text-[#FAC554]" : "text-[#FDFDFC]"}`}>
         {isFavorite ? "In My List" : "My List"}
       </Text>
     </Pressable>
@@ -63,29 +53,58 @@ interface HomeScreenProps {
 }
 
 export function HomeScreen({ onSelectShow, onSeeAllTrending, onSeeAllUpcoming }: HomeScreenProps) {
-  const insets = useSafeAreaInsets();
-  const { height: screenHeight } = useWindowDimensions();
-  const heroImageHeight = screenHeight * 0.4;
-
   const { data: shows, isLoading, isError, refetch } = useScheduleShows();
-  const toggleFavorite = useFavoritesStore((state) => state.toggleFavorite);
-  const isFeaturedFavorite = useFavoritesStore((state) =>
-    Boolean(featuredShow?.id && state.favorites[featuredShow.id]),
-  );
+  const selectedGenres = useOnboardingStore((state) => state.selectedGenres);
+  const featuredShow = useMemo(() => {
+    if (!shows?.length) {
+      return null;
+    }
 
-  const featuredShow = useMemo(() => shows?.[0], [shows]);
-  const trendingShows = useMemo(() => shows?.slice(1, 8) ?? [], [shows]);
+    return shows[Math.floor(Math.random() * shows.length)];
+  }, [shows]);
+
+  const trendingShows = useMemo(() => {
+    if (!shows?.length) {
+      return [];
+    }
+
+    // No preferences we set them completely random
+    if (!selectedGenres.length) {
+      return shuffle(shows).slice(0, 7);
+    }
+
+    const normalizedGenres = new Set(selectedGenres.map((genre) => genre.toLowerCase()));
+
+    const personalizedShows = [];
+    const otherShows = [];
+
+    for (const show of shows) {
+      const matchesGenre = show.genres.some((genre) => normalizedGenres.has(genre.toLowerCase()));
+
+      if (matchesGenre) {
+        personalizedShows.push(show);
+      } else {
+        otherShows.push(show);
+      }
+    }
+
+    // preferred genres first from the onboarding, then fill remaining randomly
+    return [...shuffle(personalizedShows), ...shuffle(otherShows)].slice(0, 7);
+  }, [shows, selectedGenres]);
+
   const upcomingShows = useMemo(() => shows?.slice(8, 16) ?? [], [shows]);
 
   if (isLoading) {
     return (
-      <View style={{ flex: 1, backgroundColor: BG_COLOR, paddingHorizontal: 25, paddingTop: insets.top + 20 }}>
-        <Skeleton style={{ height: heroImageHeight, width: "100%", borderRadius: 16 }} />
-        <Skeleton style={{ marginTop: 24, height: 24, width: 120, borderRadius: 6 }} />
-        <View style={{ marginTop: 14, flexDirection: "row", gap: 12 }}>
-          <Skeleton style={{ width: 103, height: 139, borderRadius: 10 }} />
-          <Skeleton style={{ width: 103, height: 139, borderRadius: 10 }} />
-          <Skeleton style={{ width: 103, height: 139, borderRadius: 10 }} />
+      <View className="flex-1 bg-[#02141B] px-[25px] pt-[20px]">
+        <Skeleton className="h-[40%] w-full rounded-[16px]" />
+
+        <Skeleton className="mt-[24px] h-[24px] w-[120px] rounded-[6px]" />
+
+        <View className="mt-[14px] flex-row gap-[12px]">
+          <Skeleton className="h-[139px] w-[103px] rounded-[10px]" />
+          <Skeleton className="h-[139px] w-[103px] rounded-[10px]" />
+          <Skeleton className="h-[139px] w-[103px] rounded-[10px]" />
         </View>
       </View>
     );
@@ -104,18 +123,22 @@ export function HomeScreen({ onSelectShow, onSeeAllTrending, onSeeAllUpcoming }:
   }
 
   const heroImageUri = featuredShow.image?.original ?? featuredShow.image?.medium;
+
   const genresText = featuredShow.genres.slice(0, 2).join(" - ") || "Sci-Fi - Drama";
+
   const yearText = featuredShow.premiered ? featuredShow.premiered.slice(0, 4) : "2021";
+
   const ratingText = featuredShow.rating.average ? featuredShow.rating.average.toFixed(1) : "8.5";
+
   const summaryClean = featuredShow.summary ? featuredShow.summary.replace(/<[^>]*>?/gm, "").trim() : "";
 
   return (
     <ScrollView
-      style={{ flex: 1, backgroundColor: BG_COLOR }}
+      className="flex-1 bg-[#02141B]"
       showsVerticalScrollIndicator={false}
       contentContainerStyle={{ paddingBottom: 120 }}
     >
-      <View style={{ height: heroImageHeight, width: "100%", position: "absolute", top: 0, left: 0 }}>
+      <View className="absolute left-0 top-0 h-[40%] w-full">
         {heroImageUri && (
           <Image
             source={{ uri: heroImageUri }}
@@ -134,7 +157,7 @@ export function HomeScreen({ onSelectShow, onSeeAllTrending, onSeeAllUpcoming }:
         />
       </View>
 
-      <View style={{ marginLeft: 25, marginTop: insets.top }}>
+      <View className="ml-[25px] mt-[60px]">
         <Image
           source={require("@/assets/images/logo.png")}
           contentFit="contain"
@@ -143,138 +166,55 @@ export function HomeScreen({ onSelectShow, onSeeAllTrending, onSeeAllUpcoming }:
         />
       </View>
 
-      <View style={{ marginLeft: 25, marginTop: 186 }}>
-        <Text
-          style={{
-            color: "#FAC554",
-            fontFamily: "Geist-Medium",
-            fontSize: 12,
-            lineHeight: 14,
-            letterSpacing: -0.02,
-            marginBottom: 6,
-          }}
-        >
+      <View className="ml-[25px] mt-[186px]">
+        <Text className="mb-[6px] font-[Geist-Medium] text-[12px] leading-[14px] tracking-[-0.02px] text-[#FAC554]">
           FEATURED
         </Text>
 
         <Text
           numberOfLines={1}
-          style={{
-            color: "#FDFDFC",
-            fontFamily: "Geist-Medium",
-            fontSize: 30,
-            lineHeight: 34,
-            letterSpacing: -0.02,
-            textShadowColor: "#000000",
-            textShadowOffset: { width: 5, height: 4 },
-            textShadowRadius: 10.7,
-            paddingRight: 25,
-            marginBottom: 8,
-          }}
+          className="mb-[8px] pr-[25px] font-[Geist-Medium] text-[30px] leading-[34px] tracking-[-0.02px] text-[#FDFDFC]"
         >
           {featuredShow.name}
         </Text>
 
-        <View style={{ flexDirection: "row", alignItems: "center", marginBottom: 8 }}>
-          <Text
-            style={{
-              color: "rgba(253, 253, 252, 0.80)",
-              fontFamily: "Geist-Regular",
-              fontSize: 12,
-              letterSpacing: -0.02,
-            }}
-          >
+        <View className="mb-[8px] flex-row items-center">
+          <Text className="font-[Geist-Regular] text-[12px] tracking-[-0.02px] text-[rgba(253,253,252,0.80)]">
             {genresText} - {yearText} -{" "}
           </Text>
+
           <SvgIcon name="star" size={13} color="#FAC554" style={{ marginRight: 4 }} />
-          <Text
-            style={{
-              color: "#FAC554",
-              fontFamily: "Geist-Medium",
-              fontSize: 12,
-              letterSpacing: -0.02,
-            }}
-          >
-            {ratingText}
-          </Text>
+
+          <Text className="font-[Geist-Medium] text-[12px] tracking-[-0.02px] text-[#FAC554]">{ratingText}</Text>
         </View>
 
         <Text
           numberOfLines={3}
-          style={{
-            width: 331,
-            maxHeight: 60,
-            color: "rgba(253, 253, 252, 0.90)",
-            fontFamily: "Geist-Regular",
-            fontSize: 14,
-            lineHeight: 20,
-            letterSpacing: 0.02,
-            marginBottom: 12,
-          }}
+          className="mb-[12px] max-h-[60px] w-[331px] font-[Geist-Regular] text-[14px] leading-[20px] tracking-[0.02px] text-[rgba(253,253,252,0.90)]"
         >
           {summaryClean}
         </Text>
 
-        <View style={{ flexDirection: "row", alignItems: "center", gap: 12, width: "100%" }}>
+        <View className="w-full flex-row items-center gap-[12px]">
           <Pressable
             onPress={() => onSelectShow(featuredShow.id)}
-            style={{
-              width: "45%",
-              height: 43,
-              borderRadius: 10,
-              backgroundColor: "#FAC554",
-              flexDirection: "row",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-            className="active:opacity-85"
+            className="h-[43px] w-[45%] flex-row items-center justify-center rounded-[10px] bg-[#FAC554] active:opacity-85"
           >
-            <SvgIcon name="play" size={16} color="#02141B" style={{ marginRight: 8 }} />
-            <Text
-              style={{
-                color: "#02141B",
-                fontFamily: "Geist-SemiBold",
-                fontSize: 14,
-              }}
-            >
-              Play
-            </Text>
+            <SvgIcon name="discover" size={16} color="#02141B" style={{ marginRight: 8 }} />
+
+            <Text className="font-[Geist-SemiBold] text-[14px] text-[#02141B]">Details</Text>
           </Pressable>
+
           <FeaturedFavoriteButton show={featuredShow} />
         </View>
       </View>
 
-      <View style={{ marginTop: 19 }}>
-        <View
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-            justifyContent: "space-between",
-            paddingHorizontal: 25,
-            marginBottom: 12,
-          }}
-        >
-          <Text
-            style={{
-              color: "#FDFDFC",
-              fontFamily: "Geist-SemiBold",
-              fontSize: 18,
-              lineHeight: 32,
-              letterSpacing: 0,
-            }}
-          >
-            Trending now
-          </Text>
+      <View className="mt-[19px]">
+        <View className="mb-[12px] flex-row items-center justify-between px-[25px]">
+          <Text className="font-[Geist-SemiBold] text-[18px] leading-[32px] text-[#FDFDFC]">Trending now</Text>
+
           <Pressable onPress={onSeeAllTrending} hitSlop={8}>
-            <Text
-              style={{
-                color: "#FAC554",
-                fontFamily: "Geist-SemiBold",
-                fontSize: 12,
-                lineHeight: 16,
-                letterSpacing: 0.02,
-              }}
-            >
+            <Text className="font-[Geist-SemiBold] text-[12px] leading-[16px] tracking-[0.02px] text-[#FAC554]">
               See all →
             </Text>
           </Pressable>
@@ -283,7 +223,10 @@ export function HomeScreen({ onSelectShow, onSeeAllTrending, onSeeAllUpcoming }:
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
-          contentContainerStyle={{ paddingHorizontal: 25, gap: 12 }}
+          contentContainerStyle={{
+            paddingHorizontal: 25,
+            gap: 12,
+          }}
         >
           {trendingShows.map((show) => (
             <ShowCompactCard key={show.id} show={show} onPress={() => onSelectShow(show.id)} />
@@ -291,37 +234,12 @@ export function HomeScreen({ onSelectShow, onSeeAllTrending, onSeeAllUpcoming }:
         </ScrollView>
       </View>
 
-      <View style={{ marginTop: 24 }}>
-        <View
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-            justifyContent: "space-between",
-            paddingHorizontal: 25,
-            marginBottom: 12,
-          }}
-        >
-          <Text
-            style={{
-              color: "#FDFDFC",
-              fontFamily: "Geist-SemiBold",
-              fontSize: 18,
-              lineHeight: 32,
-              letterSpacing: 0,
-            }}
-          >
-            Upcoming
-          </Text>
+      <View className="mt-[24px]">
+        <View className="mb-[12px] flex-row items-center justify-between px-[25px]">
+          <Text className="font-[Geist-SemiBold] text-[18px] leading-[32px] text-[#FDFDFC]">Upcoming</Text>
+
           <Pressable onPress={onSeeAllUpcoming} hitSlop={8}>
-            <Text
-              style={{
-                color: "#FAC554",
-                fontFamily: "Geist-SemiBold",
-                fontSize: 12,
-                lineHeight: 16,
-                letterSpacing: 0.02,
-              }}
-            >
+            <Text className="font-[Geist-SemiBold] text-[12px] leading-[16px] tracking-[0.02px] text-[#FAC554]">
               See all →
             </Text>
           </Pressable>
@@ -330,7 +248,10 @@ export function HomeScreen({ onSelectShow, onSeeAllTrending, onSeeAllUpcoming }:
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
-          contentContainerStyle={{ paddingHorizontal: 25, gap: 12 }}
+          contentContainerStyle={{
+            paddingHorizontal: 25,
+            gap: 12,
+          }}
         >
           {upcomingShows.map((show) => (
             <ShowCompactCard key={show.id} show={show} onPress={() => onSelectShow(show.id)} />
